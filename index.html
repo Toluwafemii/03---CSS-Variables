@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Scoped CSS Variables and JS</title>
+  <link rel="icon" href="https://fav.farm/🔥" />
+</head>
+
+<body>
+  <h2>Update CSS Variables with <span class='hl'>JS</span></h2>
+
+  <!-- Controls starts -->
+  <div class="controls">
+    <label for="spacing">Spacing:</label>
+    <input id="spacing" type="range" name="spacing" min="10" max="200" value="10" data-sizing="px">
+
+    <label for="blur">Blur:</label>
+    <input id="blur" type="range" name="blur" min="0" max="25" value="10" data-sizing="px">
+
+    <label for="base">Base Color</label> <br>
+    <input id="base" type="color" name="base" value="#ffc600">
+  </div>
+  <!-- Controls End-->
+
+  <!-- Image displayed starts -->
+  <div class="imageContainer">
+    <a id="imageLink" href="#">
+      <img alt="Random Unsplash Image" id="unSplashedImage">
+    </a>
+  </div>
+  <!-- Image Display ends-->
+
+
+  <style>
+    :root {
+      --base: #ffc600;
+      --spacing: 10px;
+      --blur: 10px;
+    }
+
+    img {
+      padding: var(--spacing);
+      background-color: var(--base);
+      filter: blur(var(--blur));
+    }
+
+    .hl {
+      color: var(--base);
+    }
+
+    /*
+      misc styles, nothing to do with CSS variables
+    */
+
+    body {
+      text-align: center;
+      background: #193549;
+      color: white;
+      font-family: 'helvetica neue', sans-serif;
+      font-weight: 100;
+      font-size: 50px;
+    }
+
+    .controls {
+      margin-bottom: 50px;
+    }
+
+    input {
+      width: 100px;
+    }
+
+    .imageContainer {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 500px;
+      height: 500px;
+      overflow: hidden;
+      margin: 0 auto;
+      border: 2px solid black;
+      border-radius: 5px;
+    }
+
+    #unSplashedImage {
+      max-width: 500px;
+      max-height: 500px;
+      object-fit: cover;
+    }
+  </style>
+
+  <script>
+
+    const inputs = document.querySelectorAll('.controls input');
+
+    function handleUpdates() {
+      const suffix = this.dataset.sizing || '';
+      console.log(suffix);
+    }
+
+    inputs.forEach(input => input.addEventListener('change', handleUpdates));
+    inputs.forEach(input => input.addEventListener('mousemove', handleUpdates));
+
+
+    // Handles Random Image display
+    let clientID = "hnVjc4RPWUxxZrpiATCO4hv8VtpV_OZMHKgJsKCN7ss";
+    let endpoint = `https://api.unsplash.com/photos/random/?client_id=${clientID}`;
+
+    let imageElement = document.querySelector("#unSplashedImage");
+    let imageLink = document.querySelector("#imageLink")
+
+    fetch(endpoint)
+      .then(function (response) {
+        return response.json();
+      })
+      .then(function (jsonData) {
+        imageElement.src = jsonData.urls.regular;
+      })
+
+      .catch(function (error) {
+        console.log("Error: " + error);
+      });
+
+    // Add an error event handler (very important)
+    imageElement.onerror = function () {
+      console.error("Image loading failed!");
+    }
+  </script>
+
+</body>
+
+</html>
